@@ -108,5 +108,6 @@ rand.grid_scores_
 print rand.best_score_
 print rand.best_params_
 
+print 'done this lesson x2'
 
 
