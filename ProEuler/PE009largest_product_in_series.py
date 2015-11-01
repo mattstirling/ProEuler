@@ -33,7 +33,7 @@ str_num = '''73167176531330624919225119674426574742355349194934
 71636269561882670428252483600823257530420752963450'''
 
 import re
-print len(str_num)
+print (len(str_num))
 
 str_num = re.sub(r"\s+", "", str_num, flags=re.UNICODE)
 
@@ -50,7 +50,7 @@ for i in range(len(str_num)-sub_len+1):
     if curr_prod > max_prod:
         max_prod = curr_prod
 
-print max_prod
+print (max_prod)
 
 
 

@@ -10,7 +10,7 @@ import numpy as np
 def isPalin(num):
     str_num = str(num)
     num_len =len(str_num)
-    for i in range(num_len/2):
+    for i in range(int(num_len/2)):
         if not str_num[i]==str_num[num_len-1-i]:
             return 0
             break
@@ -37,5 +37,5 @@ for i in range(913,999):
             print (i,j,i*j)
             if i*j>max_num:
                 max_num = i*j
-print max_num
+print (max_num)
 print ('done')
