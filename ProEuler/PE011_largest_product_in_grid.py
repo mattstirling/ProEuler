@@ -4,7 +4,6 @@ Created on Nov 5, 2015
 @author: Trader
 '''
 folder_in = 'C:/Temp/python/in/'
-folder_out = 'C:/Temp/python/out/'
 file_in = 'pe011_grid.txt'
 
 grid=[]
