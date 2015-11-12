@@ -24,7 +24,7 @@ impl_path_left = []
 impl_path_dist = []
 
 #n is the number of robots
-for n in range(800,900,10):
+for n in range(823,827):
     
     num_bot.append(n)
     
@@ -43,11 +43,11 @@ for n in range(800,900,10):
         file_w.write(','+'dist_per_step')
         file_w.write('\n')
     
-    #step = .01
-    fixed_f=.01
-    allow_dist_error = 25
-    max_steps = 20000000
-    record_every = 100000
+    #step = .0001
+    fixed_f=.0025
+    allow_dist_error = .01/2
+    max_steps = 200000000
+    record_every = 500000
     
     #define the first point of bot #1
     #let x_1, y_1 be (0.999,0) ... this makes lambda_1 = 0
