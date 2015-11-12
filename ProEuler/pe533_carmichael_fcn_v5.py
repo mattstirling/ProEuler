@@ -47,7 +47,21 @@ def carmichael_fact(n):
         
         return mult
 
-total=2000
+
+
+
+
+#########################################################################################
+#########################################################################################
+#########################################################################################
+#########################################################################################
+############   FIRST PASS to 1 million
+#########################################################################################
+#########################################################################################
+#########################################################################################
+#########################################################################################
+true_total = 20000000
+total=1000000
 
 t0 = time.time()
 #get all primes first
@@ -56,8 +70,8 @@ t1 = time.time()
 #print 'have sub-' + str(total+1) + ' primes: ' + str(t1-t0)
 #print primes_list
 
-powers_of_2_list = list(powers_of_2(total))
-print len(powers_of_2_list)
+powers_of_2_list = list(powers_of_2(true_total))
+#print len(powers_of_2_list)
 t2 = time.time()
 print 'have sub-' + str(total+1) + ' powers of 2: ' + str(t2-t1)
 
@@ -73,8 +87,10 @@ print 'have ' + str(total+1) + ' lambda(p**1) values: ' + str(t3-t2)
 #print lambda_list
 t5 =t3
 #begin Lsub_list at 0 
-Lsub_list = [0,2,24,2]
+Lsub_max_len = 24
+Lsub_max_n = 2
 Lsub_pfd = [[],[(2,1)],[(2,3),(3,1)],[(2,1)]]
+Lsub_n = [0,1,2,3]
 for n in range(4,total+1):
     #for each calculation of L_sub[n], iterate through all divisors of n
     #for each divisor, get the prime factor decomposition (pfd) st. L_sub[divisor] = p1**a1 * .. * pn**an
@@ -84,7 +100,7 @@ for n in range(4,total+1):
     #if not prime, attach (2,1) ... this saves us from using an "if statement" as we iterate below
     Lsub_pfd.append([(2,1)])
     #if (n+1) in primes_list:
-    if sum(1 for div in divisorGen(n+1)):
+    if sum(1 for div in divisorGen(n+1))==2:
         #first look if n+1 is prime, if yes add 
         Lsub_pfd[n].append((n+1,1)) 
     
@@ -123,17 +139,23 @@ for n in range(4,total+1):
             a_list[i] = max_pow( n / carmichael_1fact(p_list[i],a_list[i]) ,p_list[i]) + a_list[i]
         
         Lsub_list_next = Lsub_list_next * p_list[i]**a_list[i]
-    Lsub_list.append(Lsub_list_next)
     
+    temp_len = len(str(Lsub_list_next))
+    if temp_len > Lsub_max_len:
+        Lsub_max_len = temp_len
+        Lsub_max_n = n
+         
     #save the max_pfd
     Lsub_pfd[n]=[]
+    Lsub_n.append(n)
     if len(p_list)>1:
         for i in xrange(len(p_list)):
             Lsub_pfd[n].append((p_list[i],a_list[i]))
         
-    if n%10000==0:
+    if n%50000==0:
         print '\n' + 'done ' + str(n) + ', ~' + "{0:.1%}".format(float(n)/float(total)) 
-        print len(str(max(Lsub_list)))
+        print Lsub_max_len
+        print Lsub_max_n
         
         last_time = t5
         t5 = time.time()
@@ -147,20 +169,144 @@ print 'total run for total= ' + str(total) + ': ' + str(t4-t0)
 #print Lsub_list
 #print Lsub_pfd
     
-print max(Lsub_list) 
-print max(Lsub_list)+1
-print str(max(Lsub_list))[-9:] 
-print str(max(Lsub_list)+1)[-9:]
+print Lsub_max_len
+print Lsub_max_n
 
 
 folder_out = 'C:/Temp/python/out/'
-file_out = 'pe533_output1.txt'
+file_out = 'pe533_output.txt'
 file_w = open(folder_out + file_out,'w')
-file_w.write('i,Lsub_i'+'\n')
-for i in range(len(Lsub_list)):
-    file_w.write(str(i)+',')
-    file_w.write(str(Lsub_list[i])+'\n')
+file_w.write(str(Lsub_max_len)+'\n')
+file_w.write(str(Lsub_max_n)+'\n')
+file_w.write('\n')
 
+output_nums = [98280,45360,85680]
+
+for n in output_nums:
+    added_n = Lsub_n.index(n)
+    for pfd in Lsub_pfd[added_n]:
+        file_w.write(str(n) + ',' + str(added_n) + ',' + str(pfd[0]) + ',' + str(pfd[1]) + '\n')
+file_w.close()
+
+
+#file_w.write(str(Lsub_max)[-9:]+'\n')
+#file_w.write(str(Lsub_max+1)[-9:]+'\n')
+
+#########################################################################################
+#########################################################################################
+#########################################################################################
+#########################################################################################
+############   SECOND PASS over  19-20 million
+#########################################################################################
+#########################################################################################
+#########################################################################################
+#########################################################################################
+
+'''
+def add_carmichael_pfd(n):
+    Lsub_n.append(n)
+    this_n = len(Lsub_n)-1
+    Lsub_pfd.append([(2,1)])
+    
+    #if (n+1) in primes_list:
+    if sum(1 for div in divisorGen(n+1)):
+        #first look if n+1 is prime, if yes add 
+        Lsub_pfd[this_n].append((n+1,1)) 
+    
+    if n in powers_of_2_list:
+        #also check if this new value is a power of 2
+        Lsub_pfd[this_n].append((2,2+int(math.log(n,2))))
+    #print Lsub_pfd
+    
+    divisors_fcn = list(divisorGen(n))
+    
+    #aggregate the prime fact decomps of the max_pfd for each divisor
+    #merge like primes by keeping the max value for a
+    p_list_fcn = []
+    a_list_fcn = []
+    for j in divisors_fcn:
+        if j!=1 and j!=n:
+            if j not in Lsub_n:
+                add_carmichael_pfd(j)
+            
+            this_j = Lsub_n.index(j)
+            for p_a_fcn in Lsub_pfd[this_j]:
+                if len(p_a_fcn)>0:
+                    if p_a_fcn[0] in p_list_fcn:
+                        p_list_id_fcn = p_list_fcn.index(p_a_fcn[0]) 
+                        a_list_fcn[p_list_id] = max(a_list_fcn[p_list_id_fcn],p_a_fcn[1])
+                    else:
+                        p_list_fcn.append(p_a_fcn[0]) 
+                        a_list_fcn.append(p_a_fcn[1])
+    #print p_list_fcn
+    #print a_list_fcn
+    
+    for j in xrange(len(p_list_fcn)):
+        if not p_list_fcn[j]==2:
+            #p=2 has a different formula
+            a_list_fcn[j] = max_pow( n / carmichael_1fact(p_list_fcn[j],a_list_fcn[j]) ,p_list_fcn[j]) + a_list_fcn[j]
+        
+    #print 'added '+str(n)
+
+
+
+range2_Lower = 18083520
+range2_Max = 18968040
+
+for n in range(range2_Lower,range2_Max+1,98280):
+    #get the pfd
+    add_carmichael_pfd(n)
+    #print 'done ' + str(n)
+    #check if any primes further divide n
+    #also we calc Lsub[n] by iteratively multiplying by p**a as we determine the max power for a
+    
+    
+    added_n = Lsub_n.index(n)
+    Lsub_list_next = 1
+    for pfd in Lsub_pfd[added_n]:
+        #we know p**a divides n
+        #check if p**(a+1) divides n
+        #or just find b s.t. p**b divides (n/ p**a), so then max power is a+b
+        Lsub_list_next = Lsub_list_next * pfd[0]**pfd[1]
+    
+    temp_len = len(str(Lsub_list_next))
+    if temp_len > Lsub_max_len:
+        Lsub_max_len = temp_len
+        Lsub_max_n = n
+        print Lsub_max_len
+        print Lsub_max_n  
+    
+    if Lsub_max_len == 1923:
+        print '1923 FOUND!'
+        print Lsub_max_n
+        break
+        
+    
+    if n%1000==0:
+        print '\n' + 'done ' + str(n) + ', ~' + "{0:.1%}".format(float(n-range2_Lower )/float(range2_Max-range2_Lower)) 
+        print Lsub_max_len
+        print Lsub_max_n
+        
+        last_time = t5
+        t5 = time.time()
+        print t5-t3
+        print t5-last_time
+
+
+'''
+
+
+
+
+
+
+
+
+
+
+
+
+'''
 #print L_list
 L_list = [Lsub_list[0]]
 for i in range(1, len(Lsub_list)):
@@ -179,3 +325,4 @@ for i in range(len(Lsub_list)):
 #print primes_list
 #print Lsub_list
 #print 2**4 * 3**2 * 5**1 * 7**1 * 13*1 
+'''
