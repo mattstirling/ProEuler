@@ -202,14 +202,14 @@ file_w.close()
 #########################################################################################
 #########################################################################################
 
-'''
+
 def add_carmichael_pfd(n):
     Lsub_n.append(n)
     this_n = len(Lsub_n)-1
     Lsub_pfd.append([(2,1)])
     
     #if (n+1) in primes_list:
-    if sum(1 for div in divisorGen(n+1)):
+    if sum(1 for div in divisorGen(n+1))==2:
         #first look if n+1 is prime, if yes add 
         Lsub_pfd[this_n].append((n+1,1)) 
     
@@ -250,10 +250,10 @@ def add_carmichael_pfd(n):
 
 
 
-range2_Lower = 18083520
-range2_Max = 18968040
+range2_Lower = 18000000
+range2_Max = 19000000
 
-for n in range(range2_Lower,range2_Max+1,98280):
+for n in range(range2_Lower,range2_Max+1):
     #get the pfd
     add_carmichael_pfd(n)
     #print 'done ' + str(n)
@@ -293,7 +293,7 @@ for n in range(range2_Lower,range2_Max+1,98280):
         print t5-last_time
 
 
-'''
+
 
 
 
