@@ -78,7 +78,7 @@ def roman(n):
                 600 : 'DC',
                 700 : 'DCC',
                 800 : 'DCCC',
-                900 : 'CM',
+                900 : 'CM'
                 }
     
     str_roman = dict_case.get(n,'not_simple')
